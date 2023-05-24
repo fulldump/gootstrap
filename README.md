@@ -26,17 +26,17 @@ At the heart of Gootstrap is the robust yet simple concept of start and stop fun
 ```go
 func BootstrapMyApp() (start, stop func() error) {
 	
-	start = func() error {
-		// ...
-		return nil
+    start = func() error {
+        // Insert start-up operations here
+        return nil
     }
 	
-	stop = func() error {
-		// ...
-		return nil
+    stop = func() error {
+        // Insert shutdown operations here
+        return nil
     }
-	
-	return
+
+    return
 }
 ```
 
@@ -50,24 +50,24 @@ You can easily create background processes that perform tasks at set intervals. 
 ```go
 func myBackgroundProcess() (start func() error, stop func() error) {
 
-	shouldStop := false
+    shouldStop := false
 
-	start = func() error {
-		i := 0
-		for !shouldStop {
-			i++
-			time.Sleep(3 * time.Second)
-			fmt.Println("Processed batch", i)
-		}
-		return nil
-	}
+    start = func() error {
+        i := 0
+        for !shouldStop {
+            i++
+            time.Sleep(3 * time.Second)
+            fmt.Println("Processed batch", i)
+        }
+        return nil
+    }
 
-	stop = func() error {
-		shouldStop = true
-		return nil
-	}
+    stop = func() error {
+        shouldStop = true
+        return nil
+    }
 
-	return
+    return
 }
 ```
 
@@ -83,21 +83,21 @@ With Gootstrap, setting up and managing an HTTP server is a breeze. Here's a sim
 package main
 
 import (
-	"http"
+    "http"
 
-	"github.com/fulldump/gootstrap"
+    "github.com/fulldump/gootstrap"
 )
 
 func main() {
 
-	s := &http.Server{
-		Addr: ":8080",
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Insert your API logic here
-		}),
-	}
+    s := &http.Server{
+        Addr: ":8080",
+        Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            // Insert your API logic here
+        }),
+    }
 
-	gootstrap.Run(RunHTTPServer(s))
+    gootstrap.Run(RunHTTPServer(s))
 
 }
 ```
@@ -111,13 +111,13 @@ Gootstrap shines when you need to run multiple processes, ensuring all of them a
 package main
 
 import (
-	"http"
+    "http"
 
-	"github.com/fulldump/gootstrap"
+    "github.com/fulldump/gootstrap"
 )
 
 func main() {
-	gootstrap.Run(RunHTTPServer(s), myBackgroundProcess)
+    gootstrap.Run(RunHTTPServer(s), myBackgroundProcess)
 }
 ```
 
@@ -130,46 +130,46 @@ Adapting an existing process to work with Gootstrap is easy. Here's an example:
 package main
 
 import (
-	"fmt"
+    "fmt"
 
-	"github.com/fulldump/gootstrap"
+    "github.com/fulldump/gootstrap"
 )
 
 type MyConfig struct {
-	HTTPAddr           string
-	DatabaseConnection string
-	// Other configuration elements...
+    HTTPAddr           string
+    DatabaseConnection string
+    // Other configuration elements...
 }
 
 func MyApplication(config *MyConfig) gootstrap.Runner {
-	return func() (start, stop func() error) {
+    return func() (start, stop func() error) {
 
-		start = func() error {
-			fmt.Println("use your", config, "here")
-			// Insert service start-up operations here
+        start = func() error {
+            fmt.Println("use your", config, "here")
+            // Insert service start-up operations here
 
-			return nil
-		}
+            return nil
+        }
 
-		stop = func() error {
-			// Insert graceful service shutdown operations here:
-			// - wait for outstanding requests
-			// - close open files
-			// - flush buffers
+        stop = func() error {
+            // Insert graceful service shutdown operations here:
+            // - wait for outstanding requests
+            // - close open files
+            // - flush buffers
 
-			return nil
-		}
+            return nil
+        }
 
-		return
-	}
+        return
+    }
 }
 
 func main() {
-	
-	config := &MyConfig{} // parse your config (fulldump/goconfig highgly recommended)
-	
-	gootstrap.Run(MyApplication(config)) // just run
-	
+    
+    config := &MyConfig{} // parse your config (fulldump/goconfig highgly recommended)
+    
+    gootstrap.Run(MyApplication(config)) // just run
+    
 }
 ```
 
