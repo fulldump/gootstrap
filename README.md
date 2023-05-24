@@ -3,6 +3,21 @@
 Welcome to Gootstrap! This elegant and powerful tool, inspired in an Operating System's process lifecycle, helps you bootstrap your application, simplifying the process. With Gootstrap, you can manage multiple servers, gracefully handle shutdowns, establish watchdog mechanisms, and so much more, all with ease and confidence.
 
 
+<!-- TOC -->
+* [Gootstrap: Professional Grade Service Bootstrapping for Go](#gootstrap-professional-grade-service-bootstrapping-for-go)
+  * [Unleash the Power of Gootstrap](#unleash-the-power-of-gootstrap)
+  * [Build Powerful Background Processes](#build-powerful-background-processes)
+  * [Manage HTTP Servers with Ease](#manage-http-servers-with-ease)
+  * [Combine Multiple Processes Seamlessly](#combine-multiple-processes-seamlessly)
+  * [Easily Adapt Existing Processes](#easily-adapt-existing-processes)
+  * [Built-In Signal Handling](#built-in-signal-handling)
+  * [Compatibility and Requirements](#compatibility-and-requirements)
+  * [Getting Started](#getting-started)
+  * [Contribute](#contribute)
+  * [Support](#support)
+  * [Ready to Bootstrap Your Go Services Like a Pro?](#ready-to-bootstrap-your-go-services-like-a-pro)
+<!-- TOC -->
+
 ## Unleash the Power of Gootstrap
 
 At the heart of Gootstrap is the robust yet simple concept of start and stop functions. Just provide these two functions, and Gootstrap will breathe life into your services:
