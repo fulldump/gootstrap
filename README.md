@@ -54,19 +54,31 @@ Helpers:
 - `RunHTTPServer(...)` wraps a standard `net/http` server
 - `RunGracefulHttpServer(...)` adds a graceful-drain window
 
-## Real Example Project
+## Examples
 
-See `examples/basic-service/main.go` for a complete example that runs:
+Basic service (`examples/basic-service/main.go`) runs:
 
 - an HTTP server
 - a background worker
 - signal-based graceful shutdown
 
-Run it locally:
+Production-oriented service (`examples/production-service/main.go`) runs:
+
+- API server + readiness/liveness endpoints
+- separate metrics server
+- background worker with cooperative shutdown
+- drain mode before graceful stop
+
+Run examples locally:
 
 ```bash
 go run ./examples/basic-service
+go run ./examples/production-service
 ```
+
+## Production Guide
+
+See `PRODUCTION_PATTERNS.md` for practical patterns used in real deployments.
 
 ## Stability and Versioning
 
