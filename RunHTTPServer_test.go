@@ -1,14 +1,22 @@
 package gootstrap
 
 import (
+	"net"
 	"net/http"
 	"testing"
 	"time"
 )
 
 func TestRunHTTPServer(t *testing.T) {
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("Failed to reserve free port: %v", err)
+	}
+	addr := ln.Addr().String()
+	_ = ln.Close()
+
 	server := &http.Server{
-		Addr: "127.0.0.1:8080", // use a random free port
+		Addr: addr,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("Hello, world!"))
 		}),

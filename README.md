@@ -1,204 +1,87 @@
-# Gootstrap: Professional Grade Service Bootstrapping for Go
+# gootstrap
 
-Welcome to Gootstrap! This elegant and powerful tool, inspired in an Operating System's process lifecycle, helps you bootstrap your application, simplifying the process. With Gootstrap, you can manage multiple servers, gracefully handle shutdowns, establish watchdog mechanisms, and so much more, all with ease and confidence.
+[![CI](https://github.com/fulldump/gootstrap/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/fulldump/gootstrap/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/fulldump/gootstrap.svg)](https://pkg.go.dev/github.com/fulldump/gootstrap)
+[![Go Report Card](https://goreportcard.com/badge/github.com/fulldump/gootstrap)](https://goreportcard.com/report/github.com/fulldump/gootstrap)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+Lightweight lifecycle helpers to bootstrap long-running Go services.
 
-<!-- TOC -->
-* [Gootstrap: Professional Grade Service Bootstrapping for Go](#gootstrap-professional-grade-service-bootstrapping-for-go)
-  * [Unleash the Power of Gootstrap](#unleash-the-power-of-gootstrap)
-  * [Build Powerful Background Processes](#build-powerful-background-processes)
-  * [Manage HTTP Servers with Ease](#manage-http-servers-with-ease)
-  * [Combine Multiple Processes Seamlessly](#combine-multiple-processes-seamlessly)
-  * [Easily Adapt Existing Processes](#easily-adapt-existing-processes)
-  * [Built-In Signal Handling](#built-in-signal-handling)
-  * [Compatibility and Requirements](#compatibility-and-requirements)
-  * [Getting Started](#getting-started)
-  * [Contribute](#contribute)
-  * [Support](#support)
-  * [Ready to Bootstrap Your Go Services Like a Pro?](#ready-to-bootstrap-your-go-services-like-a-pro)
-<!-- TOC -->
+`gootstrap` uses a tiny abstraction (`Runner`) and a small set of composable
+helpers to manage process startup, coordinated shutdown, and OS signal handling.
 
-## Unleash the Power of Gootstrap
-
-At the heart of Gootstrap is the robust yet simple concept of start and stop functions. Just provide these two functions, and Gootstrap will breathe life into your services:
-
-
-```go
-func BootstrapMyApp() (start, stop func() error) {
-	
-    start = func() error {
-        // Insert start-up operations here
-        return nil
-    }
-	
-    stop = func() error {
-        // Insert shutdown operations here
-        return nil
-    }
-
-    return
-}
-```
-
-Note: Both start and stop functions should be blocking to maintain control flow.
-
-
-## Build Powerful Background Processes
-
-You can easily create background processes that perform tasks at set intervals. Here's an example where the process does something every 3 seconds:
-
-```go
-func myBackgroundProcess() (start func() error, stop func() error) {
-
-    shouldStop := false
-
-    start = func() error {
-        i := 0
-        for !shouldStop {
-            i++
-            time.Sleep(3 * time.Second)
-            fmt.Println("Processed batch", i)
-        }
-        return nil
-    }
-
-    stop = func() error {
-        shouldStop = true
-        return nil
-    }
-
-    return
-}
-```
-
-To run this, simply use `gootstrap.Run(myBackgroundProcess)` in your `main.go`.
-
-
-## Manage HTTP Servers with Ease
-
-With Gootstrap, setting up and managing an HTTP server is a breeze. Here's a simple example:
-
-
-```go
-package main
-
-import (
-    "http"
-
-    "github.com/fulldump/gootstrap"
-)
-
-func main() {
-
-    s := &http.Server{
-        Addr: ":8080",
-        Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            // Insert your API logic here
-        }),
-    }
-
-    gootstrap.Run(RunHTTPServer(s))
-
-}
-```
-
-## Combine Multiple Processes Seamlessly
-
-Gootstrap shines when you need to run multiple processes, ensuring all of them are managed effectively:
-
-
-```go
-package main
-
-import (
-    "http"
-
-    "github.com/fulldump/gootstrap"
-)
-
-func main() {
-    gootstrap.Run(RunHTTPServer(s), myBackgroundProcess)
-}
-```
-
-## Easily Adapt Existing Processes
-
-Adapting an existing process to work with Gootstrap is easy. Here's an example:
-
-
-```go
-package main
-
-import (
-    "fmt"
-
-    "github.com/fulldump/gootstrap"
-)
-
-type MyConfig struct {
-    HTTPAddr           string
-    DatabaseConnection string
-    // Other configuration elements...
-}
-
-func MyApplication(config *MyConfig) gootstrap.Runner {
-    return func() (start, stop func() error) {
-
-        start = func() error {
-            fmt.Println("use your", config, "here")
-            // Insert service start-up operations here
-
-            return nil
-        }
-
-        stop = func() error {
-            // Insert graceful service shutdown operations here:
-            // - wait for outstanding requests
-            // - close open files
-            // - flush buffers
-
-            return nil
-        }
-
-        return
-    }
-}
-
-func main() {
-    
-    config := &MyConfig{} // parse your config (fulldump/goconfig highgly recommended)
-    
-    gootstrap.Run(MyApplication(config)) // just run
-    
-}
-```
-
-## Built-In Signal Handling
-
-Gootstrap's built-in signal handling ensures that your service will respond appropriately to OS signals like `SIGINT` and `SIGTERM`. The `Run` function will block until a signal is received, at which point it will call the stop function provided by your service, allowing for a graceful shutdown process.
-
-
-## Compatibility and Requirements
-
-Gootstrap is compatible with any Go services or applications. To use Gootstrap, all you need is a Go environment configured with Go 1.15 or later.
-
-## Getting Started
-
-Getting started with Gootstrap is as easy as running a `go get` command:
+## Install
 
 ```bash
 go get github.com/fulldump/gootstrap
 ```
 
-After that, you just need to include Gootstrap in your application and start enjoying its features.
+## Quick Start
 
-## Contribute
-We love contributions from the community! If you'd like to contribute, feel free to submit a pull request on our [GitHub page](https://github.com/fulldump/gootstrap).
+```go
+package main
 
+import (
+	"net/http"
 
-## Support
-If you encounter any issues or have questions about Gootstrap, don't hesitate to open an issue on our GitHub page. We are dedicated to improving Gootstrap and supporting our users.
+	"github.com/fulldump/gootstrap"
+)
 
-## Ready to Bootstrap Your Go Services Like a Pro?
+func main() {
+	server := &http.Server{
+		Addr: ":8080",
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("ok"))
+		}),
+	}
 
-Don't wait any longer. Start using Gootstrap today and elevate your Go service management to the next level!
+	gootstrap.Run(gootstrap.RunHTTPServer(server))
+}
+```
+
+## Core Concepts
+
+`Runner` defines lifecycle in two functions:
+
+- `start() error` starts a service and blocks while it runs
+- `stop() error` gracefully stops it
+
+Helpers:
+
+- `Run(...)` starts services and stops on `SIGINT`/`SIGTERM`
+- `RunAll(...)` composes multiple runners
+- `RunUntilSignal(...)` allows custom signals
+- `RunHTTPServer(...)` wraps a standard `net/http` server
+- `RunGracefulHttpServer(...)` adds a graceful-drain window
+
+## Real Example Project
+
+See `examples/basic-service/main.go` for a complete example that runs:
+
+- an HTTP server
+- a background worker
+- signal-based graceful shutdown
+
+Run it locally:
+
+```bash
+go run ./examples/basic-service
+```
+
+## Stability and Versioning
+
+The project follows semantic versioning. Release notes are tracked in
+`CHANGELOG.md`.
+
+Release process is documented in `RELEASING.md`.
+
+## Contributing
+
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
+- `SECURITY.md`
+- `SUPPORT.md`
+
+## License
+
+MIT, see `LICENSE`.

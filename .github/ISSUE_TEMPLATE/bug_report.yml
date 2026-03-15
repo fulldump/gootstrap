@@ -1,0 +1,40 @@
+name: Bug report
+description: Report a reproducible bug
+title: "bug: "
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and expected behavior.
+      placeholder: A clear and concise description.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: input
+    id: go_version
+    attributes:
+      label: Go version
+      placeholder: go version go1.22.4 linux/amd64
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS/Arch
+      placeholder: linux/amd64
+    validations:
+      required: true

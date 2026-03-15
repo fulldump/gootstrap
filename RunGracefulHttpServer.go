@@ -8,7 +8,8 @@ import (
 	"time"
 )
 
-// RunGracefulHttpServer is an example of HTTP server with graceful shutdown
+// RunGracefulHttpServer bootstraps an HTTP server with a graceful shutdown
+// window that serves 503 responses for new requests before stopping.
 func RunGracefulHttpServer(server *http.Server) Runner {
 	return func() (start func() error, stop func() error) {
 

@@ -95,3 +95,41 @@ func TestRunAllWithWait(t *testing.T) {
 		t.Error("Expected RunAll to wait for all runners to start and stop")
 	}
 }
+
+func TestRunAllSkipsInvalidRunners(t *testing.T) {
+	validRunnerStarted := false
+	validRunnerStopped := false
+
+	validRunner := func() (func() error, func() error) {
+		return func() error {
+				validRunnerStarted = true
+				return nil
+			}, func() error {
+				validRunnerStopped = true
+				return nil
+			}
+	}
+
+	runnerWithNilFunctions := func() (func() error, func() error) {
+		return nil, nil
+	}
+
+	allRunner := RunAll(nil, runnerWithNilFunctions, validRunner)
+	start, stop := allRunner()
+
+	if err := start(); err != nil {
+		t.Fatalf("Unexpected error while starting: %v", err)
+	}
+
+	if err := stop(); err != nil {
+		t.Fatalf("Unexpected error while stopping: %v", err)
+	}
+
+	if !validRunnerStarted {
+		t.Fatal("Expected valid runner start to be called")
+	}
+
+	if !validRunnerStopped {
+		t.Fatal("Expected valid runner stop to be called")
+	}
+}

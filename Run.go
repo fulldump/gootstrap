@@ -4,7 +4,7 @@ import (
 	"syscall"
 )
 
-// Run is just a shortcut for the most common configuration
+// Run starts all runners and stops them on SIGTERM or SIGINT.
 func Run(runners ...Runner) {
 	RunUntilSignal(RunAll(runners...), syscall.SIGTERM, syscall.SIGINT)
 }

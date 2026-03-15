@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// RunHTTPServer is a basic example for bootstrapping HTTP servers
+// RunHTTPServer bootstraps a standard net/http server lifecycle.
 func RunHTTPServer(server *http.Server) Runner {
 	return func() (start, stop func() error) {
 
